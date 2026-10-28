@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { testingApi } from "../modules/testing1/testing.controller.js";
 
 export class UserRoutes {
   public userRoute = Router();
@@ -8,7 +9,7 @@ export class UserRoutes {
   }
 
   private initializeRoutes() {
-    this.userRoute.get("/get", userController.getUser);
+    this.userRoute.get("/get", testingApi.getTheatreData);
   }
 }
 
