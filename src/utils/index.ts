@@ -1,3 +1,4 @@
+import { ApiError } from "../errors/apiError.js";
 export class Utils {
   getOffsetAndLimit(
     page: number,
@@ -25,3 +26,10 @@ export class Utils {
   }
 }
 export const utils = new Utils();
+
+
+export function assertObjectId(id: string, label = "id") {
+  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+    throw new ApiError(400, `Invalid ${label}`);
+  }
+}

@@ -4,6 +4,7 @@ import { authApi } from "../modules/auth/auth.contorller.js";
 import { userApi } from "../modules/user/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { asyncHandler } from "../errors/asyncHandler.js";
+import { postApi } from "../modules/posts/post.controller.js";
 
 export class UserRoutes {
   public userRoute = Router();
@@ -44,6 +45,37 @@ export class UserRoutes {
       "/users/me",
       authMiddleware,
       asyncHandler((req, res) => userApi.updateMe(req, res)),
+    );
+
+    this.userRoute.get(
+      "/posts",
+      asyncHandler((req, res) => postApi.list(req, res)),
+    );
+    this.userRoute.get(
+      "/posts/:id",
+      asyncHandler((req, res) => postApi.getOne(req, res)),
+    );
+
+    // Posts (login needed)
+    this.userRoute.post(
+      "/posts",
+      authMiddleware,
+      asyncHandler((req, res) => postApi.create(req, res)),
+    );
+    this.userRoute.patch(
+      "/posts/:id",
+      authMiddleware,
+      asyncHandler((req, res) => postApi.update(req, res)),
+    );
+    this.userRoute.delete(
+      "/posts/:id",
+      authMiddleware,
+      asyncHandler((req, res) => postApi.remove(req, res)),
+    );
+    this.userRoute.get(
+      "/users/me/posts",
+      authMiddleware,
+      asyncHandler((req, res) => postApi.myPosts(req, res)),
     );
   }
 }
