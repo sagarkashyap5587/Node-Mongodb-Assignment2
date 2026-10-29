@@ -63,9 +63,11 @@ export const REDIS_KEYS = {
   userSessions: (userId: string) => `user:${userId}:sessions`,
   profile: (userId: string) => `user:${userId}`,
   loginFail: (email: string) => `login:fail:${email}`,
- 
+
   post: (id: string) => `post:${id}`,
   postListVersion: "posts:list:version",
+  stats: "stats",
+  statsLock: "stats:lock",
   postList: (
     version: string,
     page: number,
@@ -74,4 +76,19 @@ export const REDIS_KEYS = {
     tag: string,
     sort: string,
   ) => `posts:list:v${version}:p${page}:l${limit}:s${search}:t${tag}:o${sort}`,
+};
+
+export const COMMENT_CONSTANTS = {
+  TEXT_MIN: 1,
+  TEXT_MAX: 500,
+};
+
+export const STATS_CONSTANTS = {
+  CACHE_TTL_SECONDS: 5 * 60, // 5 minutes
+  LOCK_TTL_SECONDS: 10,
+  WAIT_STEP_MS: 100,
+  WAIT_MAX_STEPS: 30,
+  TOP_TAGS: 10,
+  TOP_AUTHORS: 5,
+  TOP_COMMENTED: 5,
 };

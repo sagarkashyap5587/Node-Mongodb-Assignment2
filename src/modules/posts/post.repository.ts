@@ -1,6 +1,7 @@
 import { PostModel } from "./post.schema.js";
 import type { ListQuery, PostStatus } from "./post.interface.js";
 
+
 const SORTS = {
   newest: { createdAt: -1, _id: -1 },
   oldest: { createdAt: 1, _id: 1 },
@@ -25,11 +26,7 @@ class PostRepository {
   }
 
   async update(id: string, changes: Record<string, unknown>) {
-    return PostModel.findByIdAndUpdate(
-      id,
-      { $set: changes },
-      { new: true, runValidators: true },
-    ).lean();
+    return PostModel.findByIdAndUpdate(id, { $set: changes }, { new: true, runValidators: true }).lean();
   }
 
   async delete(id: string) {
@@ -37,19 +34,21 @@ class PostRepository {
   }
 
   async findByAuthor(userId: string) {
-    return PostModel.find({ author: userId })
-      .sort({ createdAt: -1, _id: -1 })
-      .lean();
+    return PostModel.find({ author: userId }).sort({ createdAt: -1, _id: -1 }).lean();
+  }
+
+  // $inc keeps the counter correct even with many comments at the same time.
+  // For -1 the filter stops commentCount from going below 0.
+  async incrementCommentCount(id: string, delta: 1 | -1) {
+    const filter = delta === -1 ? { _id: id, commentCount: { $gt: 0 } } : { _id: id };
+    return PostModel.updateOne(filter, { $inc: { commentCount: delta } });
   }
 
   // Page of data AND total count in ONE query ($facet), body not returned
   async listPublished(q: ListQuery) {
     const match: Record<string, unknown> = { status: "published" };
     if (q.search) {
-      match.title = {
-        $regex: q.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        $options: "i",
-      };
+      match.title = { $regex: q.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
     }
     if (q.tag) match.tags = q.tag;
 
